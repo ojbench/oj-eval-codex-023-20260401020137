@@ -79,6 +79,28 @@ See the problem description for constraints.
 
 The test data for this problem is located at `/workspace/data/023/data_test/`.
 
+## Solution Notes (This Repo)
+
+This repository builds a single executable `code` via CMake that implements a high‑performance deque using an unrolled linked list (block list):
+
+- Data structure: doubly‑linked list of fixed‑size blocks; each block stores up to 512 elements in a contiguous array, plus `sz`.
+- Operations:
+  - push_front/push_back/pop_front/pop_back in amortized O(1)
+  - insert/erase/get/set by 0‑based index in O(number of blocks) ≈ O(sqrt(n)) in the typical layout
+  - size/empty/clear/front/back supported
+- Rebalancing: on overflow, a block is split roughly in half; on underflow (size < BLOCK/4), a block attempts to merge with its next neighbor if total fits into one block. This keeps block sizes balanced and the number of blocks around O(n/BLOCK).
+- Command interface: the program accepts either
+  - a leading integer Q followed by Q operations, or
+  - a stream of operations one per token/line without a leading count.
+  Supported commands: `push_front x`, `push_back x`, `pop_front`, `pop_back`, `front`, `back`, `insert i x`, `erase i`, `get i`/`at i`, `set i x`, `size`, `empty`, `clear`.
+
+Build locally:
+
+```bash
+cmake . && make -j
+./code < input.txt > output.txt
+```
+
 ## Submission Requirements
 
 ### OJ Git Repository Compilation Process
