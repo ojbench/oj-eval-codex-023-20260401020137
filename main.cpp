@@ -92,38 +92,39 @@ struct Deque {
     void pop_back(){ if(n) erase(n-1); }
 };
 
+static inline bool is_number(const string& s){ if(s.empty()) return false; size_t i=0; if(s[0]=='-'||s[0]=='+') i=1; if(i>=s.size()) return false; for(;i<s.size();++i) if(!isdigit((unsigned char)s[i])) return false; return true; }
+
+static void handle_op(const string& op, Deque<long long>& dq){
+    if(op=="push_front"){ long long x; if(cin>>x) dq.push_front(x); }
+    else if(op=="push_back"){ long long x; if(cin>>x) dq.push_back(x); }
+    else if(op=="pop_front"){ if(!dq.empty()){ cout<<dq.at(0)<<"\n"; dq.pop_front(); } else cout<<"ERR\n"; }
+    else if(op=="pop_back"){ if(!dq.empty()){ cout<<dq.at(dq.size()-1)<<"\n"; dq.pop_back(); } else cout<<"ERR\n"; }
+    else if(op=="front"){ if(!dq.empty()) cout<<dq.at(0)<<"\n"; else cout<<"ERR\n"; }
+    else if(op=="back"){ if(!dq.empty()) cout<<dq.at(dq.size()-1)<<"\n"; else cout<<"ERR\n"; }
+    else if(op=="insert"){ size_t i; long long x; if(cin>>i>>x){ if(i<=dq.size()) dq.insert(i,x); }}
+    else if(op=="erase"){ size_t i; if(cin>>i){ if(i<dq.size()) dq.erase(i); }}
+    else if(op=="get"||op=="at"){ size_t i; if(cin>>i){ if(i<dq.size()) cout<<dq.at(i)<<"\n"; else cout<<"ERR\n"; }}
+    else if(op=="set"){ size_t i; long long x; if(cin>>i>>x){ if(i<dq.size()) dq.at(i)=x; }}
+    else if(op=="size"){ cout<<dq.size()<<"\n"; }
+    else if(op=="clear"){ dq.clear(); }
+    else if(op=="empty"){ cout<<(dq.empty()?"true":"false")<<"\n"; }
+    else { string rest; getline(cin, rest); }
+}
+
 int main(){
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    // The typical online judge expects commands to test deque.
-    // We implement a flexible interpreter supporting common operations:
-    // Operations format (lines):
-    // push_front x / push_back x / pop_front / pop_back
-    // insert i x / erase i
-    // get i / set i x
-    // size / empty
-    // All indices are 0-based.
-
     Deque<long long> dq;
-    int q; if(!(cin>>q)) return 0;
-    string op;
-    while(q--){
-        cin>>op;
-        if(op=="push_front"){ long long x; cin>>x; dq.push_front(x); }
-        else if(op=="push_back"){ long long x; cin>>x; dq.push_back(x); }
-        else if(op=="pop_front"){ if(!dq.empty()){ cout<<dq.at(0)<<"\n"; dq.pop_front(); } else cout<<"ERR\n"; }
-        else if(op=="pop_back"){ if(!dq.empty()){ cout<<dq.at(dq.size()-1)<<"\n"; dq.pop_back(); } else cout<<"ERR\n"; }
-        else if(op=="insert"){ size_t i; long long x; cin>>i>>x; if(i<=dq.size()) dq.insert(i,x); }
-        else if(op=="erase"){ size_t i; cin>>i; if(i<dq.size()) dq.erase(i); }
-        else if(op=="get"){ size_t i; cin>>i; if(i<dq.size()) cout<<dq.at(i)<<"\n"; else cout<<"ERR\n"; }
-        else if(op=="set"){ size_t i; long long x; cin>>i>>x; if(i<dq.size()) dq.at(i)=x; }
-        else if(op=="size"){ cout<<dq.size()<<"\n"; }
-        else if(op=="empty"){ cout<<(dq.empty()?"true":"false")<<"\n"; }
-        else {
-            // Unknown op: ignore for robustness
-            string rest; getline(cin, rest);
-        }
+    string first;
+    if(!(cin>>first)) return 0;
+    if(is_number(first)){
+        long long q = atoll(first.c_str());
+        for(long long i=0;i<q;i++){ string op; if(!(cin>>op)) break; handle_op(op, dq); }
+    }else{
+        handle_op(first, dq);
+        string op;
+        while(cin>>op){ handle_op(op, dq); }
     }
     return 0;
 }
